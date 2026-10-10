@@ -1,0 +1,60 @@
+=== fleet-run infer-structured-output-1010-214455-6x34 daytona sandbox 2f5f22e9-b178-4865-a636-c6e26c6c1539 cpus=4 mem=8G gpu=None
+=== stage unpack
+=== stage launch
+=== stage poll
++ apt-get update -qq
++ apt-get install -y -qq gcc g++
+debconf: unable to initialize frontend: Dialog
+debconf: (TERM is not set, so the dialog frontend is not usable.)
+debconf: falling back to frontend: Readline
+debconf: unable to initialize frontend: Readline
+debconf: (Can't locate Term/ReadLine.pm in @INC (you may need to install the Term::ReadLine module) (@INC entries checked: /etc/perl /usr/local/lib/x86_64-linux-gnu/perl/5.40.1 /usr/local/share/perl/5.40.1 /usr/lib/x86_64-linux-gnu/perl5/5.40 /usr/share/perl5 /usr/lib/x86_64-linux-gnu/perl-base /usr/lib/x86_64-linux-gnu/perl/5.40 /usr/share/perl/5.40 /usr/local/lib/site_perl) at /usr/share/perl5/Debconf/FrontEnd/Readline.pm line 8, <STDIN> line 43.)
+debconf: falling back to frontend: Teletype
+debconf: unable to initialize frontend: Teletype
+debconf: (This frontend requires a controlling tty.)
+debconf: falling back to frontend: Noninteractive
++ pip install -q --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
++ pip install -q --no-cache-dir llguidance==1.9.1 transformers pytest numpy tokenizers jinja2
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.1
+[notice] To update, run: pip install --upgrade pip
+++ python -c 'import llguidance,os;print(os.path.dirname(llguidance.__file__))'
++ SP=/usr/local/lib/python3.12/site-packages/llguidance
++ OUT=../../results/session-017-vllm-e2e/llg-pr
++ mkdir -p ../../results/session-017-vllm-e2e/llg-pr
++ diff /usr/local/lib/python3.12/site-packages/llguidance/torch.py torch_orig.py
+4c4
+< from ._lib import LLMatcher, LLExecutor, LLInterpreter
+---
+> from llguidance._lib import LLMatcher, LLExecutor, LLInterpreter
++ mkdir -p t
++ cp test_hf.py test_bitmask.py __init__.py t/
++ python -m pytest -q -p no:logging t/test_hf.py t/test_bitmask.py
++ tail -6
++ tee ../../results/session-017-vllm-e2e/llg-pr/pytest-orig.txt
+..........ss                                                             [100%]
+10 passed, 2 skipped in 22.67s
++ cp torch_patched.py /usr/local/lib/python3.12/site-packages/llguidance/torch.py
++ python -m pytest -q -p no:logging -rA t/test_hf.py t/test_bitmask.py
++ grep -E 'PASSED|FAILED|SKIPPED|ERROR|passed|failed'
++ tee ../../results/session-017-vllm-e2e/llg-pr/pytest-patched.txt
+PASSED t/test_hf.py::test_basic_tokenizer
+PASSED t/test_hf.py::test_grammar
+PASSED t/test_hf.py::test_par_grammar
+PASSED t/test_hf.py::test_fill_bitmask_row_addressing
+PASSED t/test_hf.py::test_tokenize_partial_basic[recent_tokens0]
+PASSED t/test_hf.py::test_tokenize_partial_basic[recent_tokens1]
+PASSED t/test_hf.py::test_tokenize_partial_docs
+PASSED t/test_hf.py::test_incomplete_tokenizer
+PASSED t/test_bitmask.py::test_mask_data_torch
+PASSED t/test_bitmask.py::test_mask_data_numpy
+SKIPPED [1] t/test_bitmask.py:107: mlx is not available
+SKIPPED [1] t/test_bitmask.py:122: CUDA is not available
+10 passed, 2 skipped in 8.31s
++ python -
++ tee ../../results/session-017-vllm-e2e/llg-pr/micro.txt
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+{'old': 3.633, 'new': 2.732} us/call (mid-string JSON state, Qwen2.5 vocab, 5 alternating repeats)
+=== exit 0

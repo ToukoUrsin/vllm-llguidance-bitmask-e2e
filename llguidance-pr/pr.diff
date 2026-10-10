@@ -1,0 +1,61 @@
+diff --git a/python/llguidance/torch.py b/python/llguidance/torch.py
+index d817103..bedf553 100644
+--- a/python/llguidance/torch.py
++++ b/python/llguidance/torch.py
+@@ -58,9 +58,17 @@ def fill_next_token_bitmask(interp: Union[LLMatcher, LLInterpreter],
+     assert bitmask.dtype == torch.int32, "Mask must be int32"
+     assert bitmask.is_cpu, "Mask must be on CPU"
+     assert bitmask.dim() == 2, "Mask must be 2D"
+-    v = bitmask[index, :]
+-    assert v.is_contiguous(), "Mask must be contiguous"
+-    interp.unsafe_compute_mask_ptr(v.data_ptr(), v.numel() * v.element_size())
++    # Compute the row address directly instead of creating a row view
++    # (bitmask[index, :]) on every call; this helper runs once per sequence
++    # per decoding step in serving loops.
++    rows, words = bitmask.shape
++    if index < 0:
++        index += rows
++    if not 0 <= index < rows:
++        raise IndexError(f"index {index} is out of bounds for mask with {rows} rows")
++    assert words <= 1 or bitmask.stride(1) == 1, "Mask must be contiguous"
++    interp.unsafe_compute_mask_ptr(
++        bitmask.data_ptr() + index * bitmask.stride(0) * 4, words * 4)
+ 
+ 
+ def fill_next_token_bitmask_par(executor: LLExecutor,
+diff --git a/python/torch_tests/test_hf.py b/python/torch_tests/test_hf.py
+index d33934b..d24ef6f 100644
+--- a/python/torch_tests/test_hf.py
++++ b/python/torch_tests/test_hf.py
+@@ -101,6 +101,31 @@ def test_par_grammar() -> None:
+     print(f"Parallel: {par_time} us, Sequential: {seq_time} us")
+ 
+ 
++def test_fill_bitmask_row_addressing() -> None:
++    t = tokenizer()
++    interp = lark_matcher(r"start: /[A-Z ]*/")
++    ref = allocate_token_bitmask(1, t.vocab_size)
++    fill_next_token_bitmask(interp, ref)
++    assert ref.ne(0).any() and ref.ne(-1).any()
++
++    base = torch.zeros((9, ref.shape[1]), dtype=torch.int32)
++    # plain rows, negative index, a view with a storage offset, a row-strided view
++    for mask, idx in [(base, 0), (base, 8), (base, -1), (base[3:], 2),
++                      (base[1::2], 1)]:
++        base.zero_()
++        fill_next_token_bitmask(interp, mask, idx)
++        assert torch.equal(mask[idx], ref[0])
++        assert int(base.ne(0).any(dim=1).sum()) == 1  # no other row written
++
++    with pytest.raises(IndexError):
++        fill_next_token_bitmask(interp, base, 9)
++    with pytest.raises(IndexError):
++        fill_next_token_bitmask(interp, base, -10)
++    wide = torch.zeros((2, ref.shape[1] * 2), dtype=torch.int32)
++    with pytest.raises(AssertionError):
++        fill_next_token_bitmask(interp, wide[:, ::2], 0)
++
++
+ @pytest.mark.parametrize("recent_tokens", [[], [1000, 3003]])
+ def test_tokenize_partial_basic(recent_tokens: List[int]) -> None:
+     """Test tokenize_partial with a simple sentence."""

@@ -1,0 +1,13 @@
+PASSED t/test_hf.py::test_basic_tokenizer
+PASSED t/test_hf.py::test_grammar
+PASSED t/test_hf.py::test_par_grammar
+PASSED t/test_hf.py::test_fill_bitmask_row_addressing
+PASSED t/test_hf.py::test_tokenize_partial_basic[recent_tokens0]
+PASSED t/test_hf.py::test_tokenize_partial_basic[recent_tokens1]
+PASSED t/test_hf.py::test_tokenize_partial_docs
+PASSED t/test_hf.py::test_incomplete_tokenizer
+PASSED t/test_bitmask.py::test_mask_data_torch
+PASSED t/test_bitmask.py::test_mask_data_numpy
+SKIPPED [1] t/test_bitmask.py:107: mlx is not available
+SKIPPED [1] t/test_bitmask.py:122: CUDA is not available
+10 passed, 2 skipped in 8.31s

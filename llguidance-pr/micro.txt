@@ -1,0 +1,2 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+{'old': 3.633, 'new': 2.732} us/call (mid-string JSON state, Qwen2.5 vocab, 5 alternating repeats)
