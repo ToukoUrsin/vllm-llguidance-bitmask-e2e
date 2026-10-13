@@ -1,0 +1,160 @@
+diff --git a/tests/v1/structured_output/test_structured_output_manager.py b/tests/v1/structured_output/test_structured_output_manager.py
+index 1d1e7b78d..ecbb59580 100644
+--- a/tests/v1/structured_output/test_structured_output_manager.py
++++ b/tests/v1/structured_output/test_structured_output_manager.py
+@@ -539,6 +539,66 @@ def test_rejected_draft_keeps_later_rows_constrained(
+     assert (bitmask[3] == bitmask[1]).all()
+ 
+ 
++def test_guidance_batched_fill_matches_per_row_fill(tokenizer):
++    """Without spec decoding, guidance fills all rows in one parallel call;
++    rows must equal the per-row fill, and unconstrained rows stay full."""
++    manager = StructuredOutputManager(
++        VllmConfig(
++            model_config=ModelConfig(tokenizer=TOKENIZER),
++            device_config=DeviceConfig(device="cpu"),
++            structured_outputs_config=StructuredOutputsConfig(backend="guidance"),
++        )
++    )
++    manager.reasoner_cls = MockReasoner
++    think_end = _single_token(tokenizer, THINK_END)
++    cases = [
++        (StructuredOutputsParams(json=JSON_SCHEMA), None, "", "C"),
++        (StructuredOutputsParams(regex=DIGITS_REGEX), None, "1", "C"),
++        # Still reasoning: unconstrained.
++        (StructuredOutputsParams(json=JSON_SCHEMA), {"marker": think_end}, "", "U"),
++        # Terminated: unconstrained.
++        (StructuredOutputsParams(regex=DIGITS_REGEX), None, "1" + EOS, "U"),
++        (StructuredOutputsParams(json='{"type": "array"}'), None, "[", "C"),
++    ]
++    requests = {}
++    for i, (params, reasoning_kwargs, accepted, _) in enumerate(cases):
++        sampling_params = SamplingParams(structured_outputs=params)
++        params._backend = "guidance"
++        sampling_params.update_from_generation_config({}, tokenizer.eos_token_id)
++        request = Request(
++            request_id=f"guidance-batch-{i}",
++            prompt_token_ids=[],
++            sampling_params=sampling_params,
++            pooling_params=None,
++            reasoning_ended=False if reasoning_kwargs else None,
++            reasoning_parser_kwargs=reasoning_kwargs,
++        )
++        manager.grammar_init(request)
++        _wait_for_grammar(request)
++        if accepted:
++            texts = ("1", EOS) if accepted.endswith(EOS) else (accepted,)
++            assert manager.accept_tokens(request, _to_token_ids(tokenizer, texts))
++        requests[request.request_id] = request
++
++    bitmask = manager.grammar_bitmask(
++        requests=requests,
++        structured_output_request_ids=list(requests),
++        scheduled_spec_decode_tokens={},
++    )
++    assert bitmask is not None
++    assert manager.backend is not None
++    assert manager.backend._ll_executor is not None
++    assert _row_pattern(bitmask) == "".join(c[3] for c in cases)
++
++    expected = manager.backend.allocate_token_bitmask(len(cases))
++    for i, request in enumerate(requests.values()):
++        if cases[i][3] == "C":
++            assert request.structured_output_request is not None
++            grammar = request.structured_output_request.grammar
++            grammar.fill_bitmask(expected, i)
++    assert (bitmask == expected.numpy()).all()
++
++
+ def test_outlines_termination(tokenizer):
+     """outlines_core never advances on EOS; termination must still be
+     tracked exactly once per accepted EOS and undone by rollback."""
+diff --git a/vllm/v1/structured_output/__init__.py b/vllm/v1/structured_output/__init__.py
+index 3f461ed47..4e074603b 100644
+--- a/vllm/v1/structured_output/__init__.py
++++ b/vllm/v1/structured_output/__init__.py
+@@ -11,7 +11,10 @@ from vllm.parser.engine.adapters import ParserEngineReasoningAdapter
+ from vllm.reasoning import ReasoningParserManager
+ from vllm.tokenizers import cached_tokenizer_from_config
+ from vllm.utils.import_utils import LazyLoader
+-from vllm.v1.structured_output.backend_guidance import GuidanceBackend
++from vllm.v1.structured_output.backend_guidance import (
++    GuidanceBackend,
++    GuidanceGrammar,
++)
+ from vllm.v1.structured_output.backend_types import (
+     StructuredOutputBackend,
+     StructuredOutputGrammar,
+@@ -357,9 +360,33 @@ class StructuredOutputManager:
+         # These are stored inline in the tensor and unpacked by the gpu runner.
+         cumulative_index = 0
+ 
++        # llguidance computes all masks of a non-spec batch in parallel
++        # on its own native thread pool.
++        if max_num_spec_tokens == 0 and isinstance(self.backend, GuidanceBackend):
++            guidance_batch: list[tuple[GuidanceGrammar, int]] = []
++            for req_id in structured_output_request_ids:
++                request = requests[req_id]
++                structured_output_request = request.structured_output_request
++                if TYPE_CHECKING:
++                    assert structured_output_request is not None
++                grammar = structured_output_request.grammar
++                if TYPE_CHECKING:
++                    assert isinstance(grammar, GuidanceGrammar)
++
++                apply_bitmask = (
++                    self._get_constraint_bounds(request, ()).constraint_start == 0
++                )
++                if apply_bitmask and not grammar.is_terminated():
++                    guidance_batch.append((grammar, cumulative_index))
++                else:
++                    self._grammar_bitmask[cumulative_index].fill_(self._full_mask)
++                cumulative_index += 1
++            if guidance_batch:
++                self.backend.fill_bitmasks(self._grammar_bitmask, guidance_batch)
++
+         # Optimized parallel filling of bitmasks for
+         # non-spec, large-batch-size cases
+-        if (
++        elif (
+             len(structured_output_request_ids) > self.fill_bitmask_parallel_threshold
+             and max_num_spec_tokens == 0
+         ):
+diff --git a/vllm/v1/structured_output/backend_guidance.py b/vllm/v1/structured_output/backend_guidance.py
+index 4af5ca2da..d32e0246f 100644
+--- a/vllm/v1/structured_output/backend_guidance.py
++++ b/vllm/v1/structured_output/backend_guidance.py
+@@ -176,6 +176,8 @@ class GuidanceBackend(StructuredOutputBackend):
+                 "if you see this, please report an issue."
+             )
+         self.ll_tokenizer = self._build_ll_tokenizer(self.tokenizer, self.vocab_size)
++        # Thread pool for batched mask computation, created on first use.
++        self._ll_executor: llguidance.LLExecutor | None = None
+ 
+     def compile_grammar(
+         self,
+@@ -210,8 +212,23 @@ class GuidanceBackend(StructuredOutputBackend):
+             max_num_seqs, self.ll_tokenizer.vocab_size
+         )
+ 
++    def fill_bitmasks(
++        self, bitmask: torch.Tensor, batch: list[tuple["GuidanceGrammar", int]]
++    ) -> None:
++        """Fill one bitmask row per (grammar, row index), computing all masks
++        in parallel on llguidance's native thread pool."""
++        if self._ll_executor is None:
++            self._ll_executor = llguidance.LLExecutor()
++        llguidance_torch.fill_next_token_bitmask_par(
++            self._ll_executor,
++            [(grammar.ll_matcher, index) for grammar, index in batch],
++            bitmask,
++        )
++        for grammar, _ in batch:
++            grammar.check_error()
++
+     def destroy(self):
+-        pass
++        self._ll_executor = None
+ 
+ 
+ @dataclass

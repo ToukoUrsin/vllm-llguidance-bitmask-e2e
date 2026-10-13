@@ -1,0 +1,349 @@
+(MainProcess pid=1484) INFO 10-13 16:41:30 [api_utils.py:286] non-default args: {'max_model_len': 8192, 'enable_prefix_caching': False, 'gpu_memory_utilization': 0.6, 'max_num_seqs': 64, 'disable_log_stats': True, 'revision': '7ae557604adf67be50417f59c2c2f167def9a775', 'structured_outputs_config': StructuredOutputsConfig(backend='guidance', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), 'model': 'Qwen/Qwen2.5-0.5B-Instruct'}
+(MainProcess pid=1484) WARNING 10-13 16:41:30 [arg_utils.py:1947] The global random seed is set to 0. Since VLLM_ENABLE_V1_MULTIPROCESSING is set to False, this may affect the random state of the Python process that launched vLLM.
+(MainProcess pid=1484) INFO 10-13 16:41:30 [model.py:733] Resolved architecture: Qwen2ForCausalLM
+(MainProcess pid=1484) INFO 10-13 16:41:30 [model.py:2152] Using max model len 8192
+(MainProcess pid=1484) INFO 10-13 16:41:30 [scheduler.py:307] Chunked prefill is enabled with max_num_batched_tokens=16384.
+(MainProcess pid=1484) INFO 10-13 16:41:30 [kernel.py:473] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native'])
+Fetching 9 files:   0%|          | 0/9 [00:00<?, ?it/s]Fetching 9 files: 100%|██████████| 9/9 [00:00<00:00, 2095.17it/s]
+(MainProcess pid=1484) INFO 10-13 16:41:33 [core.py:133] Initializing a V1 LLM engine (v0.31.1rc1.dev376+g5555a2d8f) with config: model='Qwen/Qwen2.5-0.5B-Instruct', speculative_config=None, tokenizer='Qwen/Qwen2.5-0.5B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=7ae557604adf67be50417f59c2c2f167def9a775, tokenizer_revision=7ae557604adf67be50417f59c2c2f167def9a775, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=8192, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=False, quantization=None, quantization_config=None, enforce_eager=False, aux_output_config=AuxOutputConfig(enable_return_routed_experts=False, max_bytes=None), kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='guidance', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, per_request_spec_decode_metrics='none', kv_cache_metrics=False, kv_cache_metrics_sample=0.01, custom_histogram_buckets=None, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=0, served_model_name=Qwen/Qwen2.5-0.5B-Instruct, enable_prefix_caching=False, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'ir_enable_torch_wrap': True, 'splitting_ops': ['vllm::unified_attention_with_output', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::qwen4_exp_ple_short_conv', 'vllm::qwen4_exp_qsa_with_output', 'vllm::qwen4_exp_qsa_prepare_with_output', 'vllm::linear_attention', 'vllm::qwen_gdn_attention_core', 'vllm::qwen_gdn_attention_core_fused_norm_packed', 'vllm::gdn_attention_core_xpu', 'vllm::olmo_hybrid_gdn_full_forward', 'vllm::sparse_attn_indexer', 'vllm::rocm_aiter_sparse_attn_indexer', 'vllm::deepseek_v4_attention', 'vllm::hpc_rope_norm_forward', 'vllm::unified_kv_cache_update', 'vllm::unified_mla_kv_cache_update'], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'cudagraph_decoder_replay': True, 'decoder_replay_cudagraph_capture_sizes': [], 'decoder_replay_trim_threshold': 768, 'compile_sizes': [], 'compile_ranges_endpoints': [16384], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'fuse_allreduce_rms': False, 'enable_qk_norm_rope_fusion': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False, 'fuse_qk_norm_rope_kvcache': False}, 'max_cudagraph_capture_size': 128, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native']), enable_flashinfer_autotune=True, enable_rocm_segmented_attn_autotune=False, enable_cutedsl_warmup=True, enable_jit_warmup=True, monokernel=False, moe_backend='auto', sparse_indexer_topk_backend='auto', linear_backend='auto', linear_backend_per_quant=None)
+(MainProcess pid=1484) INFO 10-13 16:41:34 [parallel_state.py:1906] world_size=1 rank=0 local_rank=0 distributed_init_method=file:///tmp/vllm_dist_e0c64255237444448d878a00f8f65e5a backend=nccl
+(MainProcess pid=1484) INFO 10-13 16:41:34 [parallel_state.py:2350] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, ETP rank 0, EP rank N/A, EPLB rank N/A
+(MainProcess pid=1484) INFO 10-13 16:41:34 [gpu_worker.py:518] Using V2 Model Runner
+(MainProcess pid=1484) INFO 10-13 16:41:35 [model_runner.py:392] Loading model from scratch...
+(MainProcess pid=1484) INFO 10-13 16:41:36 [cuda.py:506] Using FLASH_ATTN attention backend out of potential backends: ['FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION'].
+(MainProcess pid=1484) INFO 10-13 16:41:36 [flash_attn.py:1117] Using FlashAttention version 3
+<frozen importlib._bootstrap_external>:1297: FutureWarning: The cuda.cudart module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.runtime module instead.
+<frozen importlib._bootstrap_external>:1297: FutureWarning: The cuda.nvrtc module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.nvrtc module instead.
+(MainProcess pid=1484) INFO 10-13 16:41:36 [base_loader.py:82] Initializing model took 1.336833 seconds
+(MainProcess pid=1484) INFO 10-13 16:41:36 [weight_utils.py:1108] Filesystem type for checkpoints: OVERLAY. Checkpoint size: 0.92 GiB. Available RAM: 45.00 GiB.
+(MainProcess pid=1484) INFO 10-13 16:41:36 [weight_utils.py:1131] Auto-prefetch is disabled because the filesystem (OVERLAY) is not a recognized network FS (NFS/Lustre). If you want to force prefetching, start vLLM with --safetensors-load-strategy=prefetch.
+Loading safetensors checkpoint shards:   0% Completed | 0/1 [00:00<?, ?it/s]
+Loading safetensors checkpoint shards: 100% Completed | 1/1 [00:00<00:00,  5.22it/s]
+Loading safetensors checkpoint shards: 100% Completed | 1/1 [00:00<00:00,  5.22it/s]
+
+(MainProcess pid=1484) INFO 10-13 16:41:37 [default_loader.py:500] Loading weights took 0.22 seconds
+(MainProcess pid=1484) INFO 10-13 16:41:38 [model_runner.py:424] Model loading took 0.93 GiB memory and 3.160258 seconds
+(MainProcess pid=1484) INFO 10-13 16:41:38 [topk_topp_sampler.py:124] Using FlashInfer for top-p & top-k sampling.
+(MainProcess pid=1484) WARNING 10-13 16:41:38 [torch_utils.py:283] OMP_NUM_THREADS=16 is set; leaving Torch threads at 16 for serving. Multi-threaded torch CPU ops during serving can degrade performance through spin-wait contention and cgroup CPU-quota throttling.
+(MainProcess pid=1484) INFO 10-13 16:41:38 [utils.py:347] Using LBNHC KV cache layout.
+(MainProcess pid=1484) INFO 10-13 16:41:39 [caching.py:342] reconstructed serializable fn from standalone compile artifacts. num_artifacts=3 num_submods=25
+(MainProcess pid=1484) INFO 10-13 16:41:39 [decorators.py:319] [backbone] Directly load AOT compilation from path /root/.cache/vllm/torch_compile_cache/torch_aot_compile/a579932febe40e44a3f06da4017964bde5d1541378f20e592b9eee9276224d9e/rank_0_0/model
+(MainProcess pid=1484) INFO 10-13 16:41:39 [monitor.py:62] [backbone] torch.compile took 0.16 s in total
+(MainProcess pid=1484) INFO 10-13 16:41:39 [monitor.py:91] [backbone] Initial profiling/warmup run took 0.10 s
+Capturing CUDA graphs (PIECEWISE):   0%|          | 0/19 [00:00<?, ?it/s]Capturing CUDA graphs (PIECEWISE):  16%|█▌        | 3/19 [00:00<00:00, 21.93it/s]Capturing CUDA graphs (PIECEWISE):  32%|███▏      | 6/19 [00:00<00:00, 24.01it/s]Capturing CUDA graphs (PIECEWISE):  47%|████▋     | 9/19 [00:00<00:00, 24.25it/s]Capturing CUDA graphs (PIECEWISE):  63%|██████▎   | 12/19 [00:00<00:00, 24.36it/s]Capturing CUDA graphs (PIECEWISE):  79%|███████▉  | 15/19 [00:00<00:00, 24.47it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 19/19 [00:00<00:00, 27.97it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 19/19 [00:00<00:00, 25.92it/s]
+Capturing CUDA graphs (FULL):   0%|          | 0/2 [00:00<?, ?it/s]Capturing CUDA graphs (FULL): 100%|██████████| 2/2 [00:00<00:00, 58.20it/s]
+(MainProcess pid=1484) INFO 10-13 16:41:41 [model_runner.py:1127] Graph capturing finished in 1 secs, took 0.11 GiB
+(MainProcess pid=1484) INFO 10-13 16:41:41 [gpu_worker.py:759] Available KV cache memory: 45.57 GiB
+(MainProcess pid=1484) INFO 10-13 16:41:41 [gpu_worker.py:774] CUDA graph memory profiling is enabled (default since v0.21.0). The current --gpu-memory-utilization=0.6000 is equivalent to --gpu-memory-utilization=0.5982 without CUDA graph memory profiling. To maintain the same effective KV cache size as before, increase --gpu-memory-utilization to 0.6018. To disable, set VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS=0.
+(MainProcess pid=1484) INFO 10-13 16:41:41 [kv_cache_utils.py:1067] GPU KV cache size: 3,981,520 tokens, Maximum concurrency for 8,192 tokens per request: 486.03x
+(MainProcess pid=1484) INFO 10-13 16:41:41 [kernel_warmup.py:176] JIT kernel warmup starting.
+(MainProcess pid=1484) INFO 10-13 16:41:41 [kernel_warmup.py:189] JIT kernel warmup finished in 0.00s.
+(MainProcess pid=1484) INFO 10-13 16:41:42 [kernel.py:473] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native'])
+(MainProcess pid=1484) INFO 10-13 16:41:42 [kernel_warmup.py:460] Using FlashInfer autotune cache file: /root/.cache/vllm/flashinfer_autotune_cache/0.7.0.post1/90a/086a5589e9703645e0d10fffedaf51a478c4b183d16bd20f9c043870348744cc/autotune_configs_dp0_rank0.json
+2026-10-13 16:41:42,015 - INFO - autotuner.py:1046 - flashinfer.jit: [Autotuner]: Autotuning process starts ...
+(MainProcess pid=1484) INFO 10-13 16:41:42 [kernel_warmup.py:367] Running FlashInfer autotune with 16384 tokens and token buckets (1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 768, 1024, 1280, 1536, 1792, 2048, 2560, 3072, 3584, 4096, 8192, 16384).
+2026-10-13 16:41:42,031 - INFO - autotuner.py:1069 - flashinfer.jit: [Autotuner]: Autotuning process ends
+Capturing CUDA graphs (PIECEWISE):   0%|          | 0/19 [00:00<?, ?it/s]Capturing CUDA graphs (PIECEWISE):  16%|█▌        | 3/19 [00:00<00:00, 29.73it/s]Capturing CUDA graphs (PIECEWISE):  37%|███▋      | 7/19 [00:00<00:00, 30.04it/s]Capturing CUDA graphs (PIECEWISE):  58%|█████▊    | 11/19 [00:00<00:00, 29.95it/s]Capturing CUDA graphs (PIECEWISE):  74%|███████▎  | 14/19 [00:00<00:00, 29.94it/s]Capturing CUDA graphs (PIECEWISE):  95%|█████████▍| 18/19 [00:00<00:00, 32.38it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 19/19 [00:00<00:00, 31.64it/s]
+Capturing CUDA graphs (FULL):   0%|          | 0/11 [00:00<?, ?it/s]Capturing CUDA graphs (FULL):  55%|█████▍    | 6/11 [00:00<00:00, 60.00it/s]Capturing CUDA graphs (FULL): 100%|██████████| 11/11 [00:00<00:00, 61.08it/s]
+(MainProcess pid=1484) INFO 10-13 16:41:43 [model_runner.py:1127] Graph capturing finished in 1 secs, took 0.06 GiB
+(MainProcess pid=1484) INFO 10-13 16:41:43 [gpu_worker.py:971] CUDA graph pool memory: 0.06 GiB (actual), 0.14 GiB (estimated), difference: 0.08 GiB (125.0%).
+(MainProcess pid=1484) INFO 10-13 16:41:43 [gpu_worker.py:1034] Free memory on device (78.67/79.18 GiB) on startup. Desired GPU memory utilization is (0.6, 47.51 GiB). Actual usage is 1.27 GiB for consumed memory (weights + non-torch), 0.68 GiB for peak activation, and 0.06 GiB for CUDAGraph memory. Replace gpu_memory_utilization config with `--kv-cache-memory=48700690842` (45.36 GiB) to fit into requested memory, or `--kv-cache-memory=82156124160` (76.51 GiB) to fully utilize gpu memory. Current kv cache memory in use is 45.57 GiB.
+(MainProcess pid=1484) INFO 10-13 16:41:44 [jit_monitor.py:84] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(MainProcess pid=1484) INFO 10-13 16:41:44 [core.py:395] init engine (profile, create kv cache, warmup model) took 6.39 s (compilation: 0.16 s)
+(MainProcess pid=1484) INFO 10-13 16:41:44 [hf.py:648] Detected the chat template content format to be 'string'. You can set `--chat-template-content-format` to override this.
+usable 54 rejected 1
+warmup ok
+rep 0 done
+rep 1 done
+rep 2 done
+rep 3 done
+rep 4 done
+rep 5 done
+rep 6 done
+{
+ "outputs_token_identical_all_runs": true,
+ "mismatched_runs": 0,
+ "usable_schemas": 54,
+ "json_schema_valid_outputs": {
+  "1-0": [
+   1,
+   1
+  ],
+  "1-1": [
+   1,
+   1
+  ],
+  "1-2": [
+   1,
+   1
+  ],
+  "1-3": [
+   0,
+   1
+  ],
+  "1-4": [
+   1,
+   1
+  ],
+  "1-5": [
+   1,
+   1
+  ],
+  "1-6": [
+   1,
+   1
+  ],
+  "1-7": [
+   1,
+   1
+  ],
+  "4-0": [
+   3,
+   4
+  ],
+  "4-1": [
+   4,
+   4
+  ],
+  "4-2": [
+   2,
+   4
+  ],
+  "4-3": [
+   3,
+   4
+  ],
+  "16-0": [
+   12,
+   16
+  ],
+  "16-1": [
+   15,
+   16
+  ],
+  "64-0": [
+   52,
+   64
+  ]
+ },
+ "summary": [
+  {
+   "batch": 1,
+   "groups": 8,
+   "decode_steps_per_repeat": 974,
+   "mask_rows_per_repeat": 974,
+   "out_tokens_per_repeat": 974,
+   "e2e_ms_median": {
+    "stock": 1783.525519,
+    "par": 1782.386451,
+    "par4": 1776.396337
+   },
+   "e2e_us_per_step_median": {
+    "stock": 1831.1350297741274,
+    "par": 1829.9655554414783,
+    "par4": 1823.8155410677618
+   },
+   "grammar_bitmask_us_per_step_median": {
+    "stock": 82.27171457905544,
+    "par": 76.4905523613963,
+    "par4": 76.32605749486653
+   },
+   "grammar_share_of_e2e_pct": {
+    "stock": 4.492935433014121,
+    "par": 4.179890279024568,
+    "par4": 4.18496584639152
+   },
+   "par_e2e_reduction_pct_median_paired": 0.23866366294706315,
+   "par_e2e_reduction_pct_paired_min_max": [
+    0.06386608926339674,
+    0.6189929133559954
+   ],
+   "par_grammar_bitmask_reduction_pct_median_paired": 6.95318072192074,
+   "par_grammar_bitmask_reduction_pct_paired_min_max": [
+    6.457142533040809,
+    7.7248541286906045
+   ],
+   "par_throughput_speedup_x": 1.0006390690410383,
+   "par4_e2e_reduction_pct_median_paired": 0.2267353238448471,
+   "par4_e2e_reduction_pct_paired_min_max": [
+    0.11638119913242373,
+    0.5477308587178977
+   ],
+   "par4_grammar_bitmask_reduction_pct_median_paired": 7.241770988479727,
+   "par4_grammar_bitmask_reduction_pct_paired_min_max": [
+    6.428920597315612,
+    7.539475392578209
+   ],
+   "par4_throughput_speedup_x": 1.0040132834387847
+  },
+  {
+   "batch": 4,
+   "groups": 4,
+   "decode_steps_per_repeat": 1396,
+   "mask_rows_per_repeat": 2629,
+   "out_tokens_per_repeat": 2629,
+   "e2e_ms_median": {
+    "stock": 2682.76237,
+    "par": 2683.940142,
+    "par4": 2670.110422
+   },
+   "e2e_us_per_step_median": {
+    "stock": 1921.7495487106019,
+    "par": 1922.5932249283667,
+    "par4": 1912.6865487106015
+   },
+   "grammar_bitmask_us_per_step_median": {
+    "stock": 115.61040687679083,
+    "par": 114.40436962750717,
+    "par4": 109.78364613180516
+   },
+   "grammar_share_of_e2e_pct": {
+    "stock": 6.01589353588555,
+    "par": 5.950523914478566,
+    "par4": 5.739761499646324
+   },
+   "par_e2e_reduction_pct_median_paired": 0.04619708587199299,
+   "par_e2e_reduction_pct_paired_min_max": [
+    -0.8172992973656478,
+    0.7060664827638213
+   ],
+   "par_grammar_bitmask_reduction_pct_median_paired": 1.1310821827179036,
+   "par_grammar_bitmask_reduction_pct_paired_min_max": [
+    -19.871783957145666,
+    2.7110568913937723
+   ],
+   "par_throughput_speedup_x": 0.9995611779929181,
+   "par4_e2e_reduction_pct_median_paired": 0.2853843272270665,
+   "par4_e2e_reduction_pct_paired_min_max": [
+    0.14345938010219292,
+    1.015735678904276
+   ],
+   "par4_grammar_bitmask_reduction_pct_median_paired": 4.423839177976756,
+   "par4_grammar_bitmask_reduction_pct_paired_min_max": [
+    2.458517741184529,
+    5.874790694681478
+   ],
+   "par4_throughput_speedup_x": 1.0047383613410727
+  },
+  {
+   "batch": 16,
+   "groups": 2,
+   "decode_steps_per_repeat": 769,
+   "mask_rows_per_repeat": 3622,
+   "out_tokens_per_repeat": 3622,
+   "e2e_ms_median": {
+    "stock": 1699.433569,
+    "par": 1651.828698,
+    "par4": 1633.535265
+   },
+   "e2e_us_per_step_median": {
+    "stock": 2209.9266176853052,
+    "par": 2148.0217139141746,
+    "par4": 2124.23311443433
+   },
+   "grammar_bitmask_us_per_step_median": {
+    "stock": 230.38569830949285,
+    "par": 178.44160078023404,
+    "par4": 159.3679245773732
+   },
+   "grammar_share_of_e2e_pct": {
+    "stock": 10.425038391129956,
+    "par": 8.307253116872534,
+    "par4": 7.5023745508181605
+   },
+   "par_e2e_reduction_pct_median_paired": 2.7267954630298776,
+   "par_e2e_reduction_pct_paired_min_max": [
+    1.8508355714940177,
+    3.0383316127225086
+   ],
+   "par_grammar_bitmask_reduction_pct_median_paired": 22.958865491101754,
+   "par_grammar_bitmask_reduction_pct_paired_min_max": [
+    19.424878318175185,
+    23.382688868270364
+   ],
+   "par_throughput_speedup_x": 1.0288194962695822,
+   "par4_e2e_reduction_pct_median_paired": 3.4220955665128816,
+   "par4_e2e_reduction_pct_paired_min_max": [
+    3.3349766004145187,
+    3.877662840258983
+   ],
+   "par4_grammar_bitmask_reduction_pct_median_paired": 30.72144825750222,
+   "par4_grammar_bitmask_reduction_pct_paired_min_max": [
+    29.610345590930702,
+    31.51687019309416
+   ],
+   "par4_throughput_speedup_x": 1.040340912995227
+  },
+  {
+   "batch": 64,
+   "groups": 1,
+   "decode_steps_per_repeat": 385,
+   "mask_rows_per_repeat": 8757,
+   "out_tokens_per_repeat": 8757,
+   "e2e_ms_median": {
+    "stock": 1464.48654,
+    "par": 1241.018247,
+    "par4": 1239.902213
+   },
+   "e2e_us_per_step_median": {
+    "stock": 3803.861142857143,
+    "par": 3223.424018181818,
+    "par4": 3220.5252285714287
+   },
+   "grammar_bitmask_us_per_step_median": {
+    "stock": 945.5438493506493,
+    "par": 361.7332077922078,
+    "par4": 368.4020831168831
+   },
+   "grammar_share_of_e2e_pct": {
+    "stock": 24.857475439822068,
+    "par": 11.222017511560407,
+    "par4": 11.439192584133245
+   },
+   "par_e2e_reduction_pct_median_paired": 15.157699161919234,
+   "par_e2e_reduction_pct_paired_min_max": [
+    14.768556789528768,
+    15.420589016483982
+   ],
+   "par_grammar_bitmask_reduction_pct_median_paired": 61.69556890920265,
+   "par_grammar_bitmask_reduction_pct_paired_min_max": [
+    61.115948909432014,
+    61.941649078818514
+   ],
+   "par_throughput_speedup_x": 1.180068499025059,
+   "par4_e2e_reduction_pct_median_paired": 15.25840097319969,
+   "par4_e2e_reduction_pct_paired_min_max": [
+    13.601137409556738,
+    15.550652659011298
+   ],
+   "par4_grammar_bitmask_reduction_pct_median_paired": 60.91154552522989,
+   "par4_grammar_bitmask_reduction_pct_paired_min_max": [
+    59.42859237949673,
+    61.60330115233192
+   ],
+   "par4_throughput_speedup_x": 1.1811306767947514
+  }
+ ],
+ "config": {
+  "VLLM_ENABLE_V1_MULTIPROCESSING": "0",
+  "async_scheduling": true,
+  "prefix_caching": false,
+  "max_num_seqs": 64,
+  "temperature": 0.0,
+  "backend": "guidance"
+ },
+ "versions": {
+  "vllm": "0.31.1rc1.dev376+g5555a2d8f",
+  "torch": "2.13.0+cu129",
+  "llguidance": "Version: 1.7.6",
+  "python": "3.12.3"
+ },
+ "hardware": {
+  "gpu": "NVIDIA H100 80GB HBM3",
+  "cpu": "model name\t: Intel(R) Xeon(R) Platinum 8480+",
+  "nproc": 104,
+  "sched_affinity": 104,
+  "cgroup_cpu_max": "1600000 100000",
+  "nvidia_smi": "NVIDIA H100 80GB HBM3, 595.91.07, 81559 MiB"
+ }
+}
